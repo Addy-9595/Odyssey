@@ -16,7 +16,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
-  Ping
+  Health
 } from './odyssey.schemas.ts';
 
 import { customInstance } from '../fetch-client.ts';
@@ -41,21 +41,20 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   return result;
 };
 
-export const getGetPingUrl = () => {
+export const getGetHealthUrl = () => {
 
 
 
 
-  return `/ping`
+  return `/health`
 }
 
 /**
- * Pipeline-spike endpoint. Returns a single Ping shaped by the drizzle-zod-derived contract. No DB access yet.
- * @summary Health-check ping
+ * @summary Service health check
  */
-export const getPing = async ( options?: RequestInit): Promise<Ping> => {
+export const getHealth = async ( options?: RequestInit): Promise<Health> => {
 
-  return customInstance<Ping>(getGetPingUrl(),
+  return customInstance<Health>(getGetHealthUrl(),
   {
     ...options,
     method: 'GET'
@@ -68,45 +67,45 @@ export const getPing = async ( options?: RequestInit): Promise<Ping> => {
 
 
 
-export const getGetPingQueryKey = () => {
+export const getGetHealthQueryKey = () => {
     return [
-    `/ping`
+    `/health`
     ] as const;
     }
 
 
-export const getGetPingQueryOptions = <TData = Awaited<ReturnType<typeof getPing>>, TError = unknown>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPing>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+export const getGetHealthQueryOptions = <TData = Awaited<ReturnType<typeof getHealth>>, TError = unknown>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetPingQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetHealthQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPing>>> = ({ signal }) => getPing({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getHealth>>> = ({ signal }) => getHealth({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPing>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData> & { queryKey: QueryKey }
 }
 
-export type GetPingQueryResult = NonNullable<Awaited<ReturnType<typeof getPing>>>
-export type GetPingQueryError = unknown
+export type GetHealthQueryResult = NonNullable<Awaited<ReturnType<typeof getHealth>>>
+export type GetHealthQueryError = unknown
 
 
 /**
- * @summary Health-check ping
+ * @summary Service health check
  */
 
-export function useGetPing<TData = Awaited<ReturnType<typeof getPing>>, TError = unknown>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPing>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+export function useGetHealth<TData = Awaited<ReturnType<typeof getHealth>>, TError = unknown>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getHealth>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetPingQueryOptions(options)
+  const queryOptions = getGetHealthQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

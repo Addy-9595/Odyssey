@@ -79,12 +79,15 @@ importers:
       '@hono/zod-openapi':
         specifier: 1.4.0
         version: 1.4.0(hono@4.12.27)(zod@4.4.3)
+      '@neondatabase/serverless':
+        specifier: 1.1.0
+        version: 1.1.0
       drizzle-orm:
         specifier: 0.45.2
-        version: 0.45.2(@cloudflare/workers-types@4.20260630.1)
+        version: 0.45.2(@cloudflare/workers-types@4.20260630.1)(@neondatabase/serverless@1.1.0)
       drizzle-zod:
         specifier: 0.8.3
-        version: 0.8.3(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260630.1))(zod@4.4.3)
+        version: 0.8.3(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260630.1)(@neondatabase/serverless@1.1.0))(zod@4.4.3)
       hono:
         specifier: 4.12.27
         version: 4.12.27
@@ -98,6 +101,9 @@ importers:
       '@types/node':
         specifier: ^20.14.0
         version: 20.19.43
+      dotenv:
+        specifier: 17.4.2
+        version: 17.4.2
       drizzle-kit:
         specifier: 0.31.10
         version: 0.31.10
@@ -1494,6 +1500,10 @@ packages:
   '@jridgewell/trace-mapping@0.3.9':
     resolution: {integrity: sha512-3Belt6tdc8bPgAtbcmdtNJlirVoTmEb5e2gC94PnkwEW9jI6CAHUeoG85tjWP5WquqfavoMtMwiG4P926ZKKuQ==}
 
+  '@neondatabase/serverless@1.1.0':
+    resolution: {integrity: sha512-r3ZZhRjEcfEdKIZnoB1RusNgvHuaBRqfCzV4Gi+5A9yUX0S4HTws/ASWqt13wL4y4I+0rqsWGdA2w7EQXHi3+Q==}
+    engines: {node: '>=19.0.0'}
+
   '@orval/angular@8.19.0':
     resolution: {integrity: sha512-w3sBRPCVmZDlpbSGyBhVsrleMsrD63AzxYOFfLx+I/Wy6FxN1xartlOUGGyroQMFLDx+Lk74+olQQp6IVnRerg==}
 
@@ -2080,6 +2090,10 @@ packages:
 
   dnssd-advertise@1.1.6:
     resolution: {integrity: sha512-Ndrrf6BMPalkQPd/zubL+4YghH2J9NspapQ09uDXwYbvOPkP0oaqf5CkcwJ0b50kS2O3ul6yVu+jz+RY62Cejg==}
+
+  dotenv@17.4.2:
+    resolution: {integrity: sha512-nI4U3TottKAcAD9LLud4Cb7b2QztQMUEfHbvhTH09bqXTxnSie8WnjPALV/WMCrJZ6UV/qHJ6L03OqO3LcdYZw==}
+    engines: {node: '>=12'}
 
   drizzle-kit@0.31.10:
     resolution: {integrity: sha512-7OZcmQUrdGI+DUNNsKBn1aW8qSoKuTH7d0mYgSP8bAzdFzKoovxEFnoGQp2dVs82EOJeYycqRtciopszwUf8bw==}
@@ -4937,6 +4951,8 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
 
+  '@neondatabase/serverless@1.1.0': {}
+
   '@orval/angular@8.19.0(typescript@5.9.3)':
     dependencies:
       '@orval/core': 8.19.0(typescript@5.9.3)
@@ -5626,6 +5642,8 @@ snapshots:
 
   dnssd-advertise@1.1.6: {}
 
+  dotenv@17.4.2: {}
+
   drizzle-kit@0.31.10:
     dependencies:
       '@drizzle-team/brocli': 0.10.2
@@ -5633,13 +5651,14 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.22.4
 
-  drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260630.1):
+  drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260630.1)(@neondatabase/serverless@1.1.0):
     optionalDependencies:
       '@cloudflare/workers-types': 4.20260630.1
+      '@neondatabase/serverless': 1.1.0
 
-  drizzle-zod@0.8.3(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260630.1))(zod@4.4.3):
+  drizzle-zod@0.8.3(drizzle-orm@0.45.2(@cloudflare/workers-types@4.20260630.1)(@neondatabase/serverless@1.1.0))(zod@4.4.3):
     dependencies:
-      drizzle-orm: 0.45.2(@cloudflare/workers-types@4.20260630.1)
+      drizzle-orm: 0.45.2(@cloudflare/workers-types@4.20260630.1)(@neondatabase/serverless@1.1.0)
       zod: 4.4.3
 
   ee-first@1.1.1: {}

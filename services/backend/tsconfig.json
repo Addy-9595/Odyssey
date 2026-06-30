@@ -5,5 +5,5 @@
     "types": ["@cloudflare/workers-types", "node"],
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "scripts", "orval.config.ts"]
+  "include": ["src", "scripts", "orval.config.ts", "drizzle.config.ts"]
 }

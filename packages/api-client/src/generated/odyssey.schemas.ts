@@ -5,12 +5,14 @@
  * Restaurant operations API — pipeline spike.
  * OpenAPI spec version: 0.0.0
  */
-export interface Ping {
-  /**
-     * @minimum -2147483648
-     * @maximum 2147483647
-     */
-  id: number;
-  message: string;
+export type HealthStatus = typeof HealthStatus[keyof typeof HealthStatus];
+
+
+export const HealthStatus = {
+  ok: 'ok',
+} as const;
+
+export interface Health {
+  status: HealthStatus;
 }
 

@@ -1,6 +1,6 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
 import { cors } from "hono/cors";
-import { registerPingRoutes } from "./routes/ping.ts";
+import { registerHealthRoutes } from "./routes/health.ts";
 
 /**
  * Builds the OpenAPIHono app. Shared by the Worker runtime entry (index.ts)
@@ -13,7 +13,7 @@ export function createApp() {
   // Dashboard runs on a different origin (Expo web dev server) than the Worker.
   app.use("*", cors());
 
-  registerPingRoutes(app);
+  registerHealthRoutes(app);
 
   return app;
 }

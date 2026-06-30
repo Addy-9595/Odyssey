@@ -7,46 +7,41 @@
   },
   "components": {
     "schemas": {
-      "Ping": {
+      "Health": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "minimum": -2147483648,
-            "maximum": 2147483647
-          },
-          "message": {
-            "type": "string"
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok"
+            ]
           }
         },
         "required": [
-          "id",
-          "message"
+          "status"
         ],
         "example": {
-          "id": 1,
-          "message": "pong"
+          "status": "ok"
         }
       }
     },
     "parameters": {}
   },
   "paths": {
-    "/ping": {
+    "/health": {
       "get": {
-        "operationId": "getPing",
-        "summary": "Health-check ping",
-        "description": "Pipeline-spike endpoint. Returns a single Ping shaped by the drizzle-zod-derived contract. No DB access yet.",
+        "operationId": "getHealth",
+        "summary": "Service health check",
         "tags": [
-          "ping"
+          "system"
         ],
         "responses": {
           "200": {
-            "description": "A ping",
+            "description": "Service is up",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Ping"
+                  "$ref": "#/components/schemas/Health"
                 }
               }
             }
