@@ -1,5 +1,5 @@
 import { createRoute, type OpenAPIHono, z } from "@hono/zod-openapi";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import type { Bindings } from "../env.ts";
 import { withDb, type PoolDb } from "../db/client.ts";
 import { customers, menuItems, orderItems, orders } from "../db/schema.ts";
@@ -72,7 +72,9 @@ async function applyOrderAction(
 
   await db
     .update(orders)
-    .set({ status: to, updatedAt: new Date() })
+    // updatedAt sourced from the DB clock (sql`now()`), same clock as the
+    // createdAt default, so the two timestamps can never be inconsistent.
+    .set({ status: to, updatedAt: sql`now()` })
     .where(eq(orders.id, id));
 
   const detail = await loadOrderDetail(db, id);
