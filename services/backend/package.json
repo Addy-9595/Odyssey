@@ -14,7 +14,7 @@
     "db:seed": "tsx scripts/seed.ts",
     "lint": "echo \"(backend) no lint yet\"",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"(backend) no tests in spike\""
+    "test": "vitest run"
   },
   "dependencies": {
     "@hono/zod-openapi": "1.4.0",
@@ -32,6 +32,7 @@
     "orval": "8.19.0",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
+    "vitest": "3.2.6",
     "wrangler": "4.86.0"
   }
 }

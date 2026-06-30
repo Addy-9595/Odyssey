@@ -3,7 +3,7 @@
   "info": {
     "title": "Odyssey API",
     "version": "0.0.0",
-    "description": "Restaurant operations API — pipeline spike."
+    "description": "Restaurant operations API."
   },
   "components": {
     "schemas": {
@@ -23,6 +23,331 @@
         "example": {
           "status": "ok"
         }
+      },
+      "OrderDetail": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "customerId": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "type": {
+            "$ref": "#/components/schemas/OrderType"
+          },
+          "totalCents": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItemDetail"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "customerId",
+          "status",
+          "type",
+          "totalCents",
+          "createdAt",
+          "updatedAt",
+          "customer",
+          "items"
+        ]
+      },
+      "OrderStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "confirmed",
+          "preparing",
+          "ready",
+          "completed",
+          "cancelled"
+        ]
+      },
+      "OrderType": {
+        "type": "string",
+        "enum": [
+          "dine_in",
+          "takeaway",
+          "delivery"
+        ]
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true,
+            "maxLength": 40
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "email",
+          "phone",
+          "createdAt"
+        ]
+      },
+      "OrderItemDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/OrderItem"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "menuItem": {
+                "$ref": "#/components/schemas/MenuItem"
+              }
+            },
+            "required": [
+              "menuItem"
+            ]
+          }
+        ]
+      },
+      "MenuItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "categoryId": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 160
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceCents": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "isAvailable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "categoryId",
+          "name",
+          "description",
+          "priceCents",
+          "isAvailable"
+        ]
+      },
+      "OrderItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "orderId": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "menuItemId": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "quantity": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "unitPriceCents": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          }
+        },
+        "required": [
+          "id",
+          "orderId",
+          "menuItemId",
+          "quantity",
+          "unitPriceCents"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "details": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "error",
+          "code"
+        ],
+        "example": {
+          "error": "Order not found",
+          "code": "ORDER_NOT_FOUND"
+        }
+      },
+      "CreateOrderBody": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "type": {
+            "$ref": "#/components/schemas/OrderType"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "menuItemId": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "exclusiveMinimum": true
+                },
+                "quantity": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "required": [
+                "menuItemId",
+                "quantity"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "customerId",
+          "type",
+          "items"
+        ],
+        "additionalProperties": false,
+        "example": {
+          "customerId": 1,
+          "type": "dine_in",
+          "items": [
+            {
+              "menuItemId": 1,
+              "quantity": 2
+            }
+          ]
+        }
+      },
+      "OrderListItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "customerId": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "type": {
+            "$ref": "#/components/schemas/OrderType"
+          },
+          "totalCents": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer"
+          }
+        },
+        "required": [
+          "id",
+          "customerId",
+          "status",
+          "type",
+          "totalCents",
+          "createdAt",
+          "updatedAt",
+          "customer"
+        ]
       }
     },
     "parameters": {}
@@ -42,6 +367,481 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders": {
+      "post": {
+        "operationId": "createOrder",
+        "summary": "Create an order",
+        "tags": [
+          "orders"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrderBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable: customer or menu item missing, or item unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "listOrders",
+        "summary": "List orders (optionally filtered by status and type)",
+        "tags": [
+          "orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "$ref": "#/components/schemas/OrderStatus"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "$ref": "#/components/schemas/OrderType"
+            },
+            "required": false,
+            "name": "type",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderListItem"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid query",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "operationId": "getOrder",
+        "summary": "Get an order with its items and customer",
+        "tags": [
+          "orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Order detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/confirm": {
+      "post": {
+        "operationId": "confirmOrder",
+        "summary": "Confirm a pending order",
+        "tags": [
+          "orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated order detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Illegal state transition from the order's current status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/preparing": {
+      "post": {
+        "operationId": "preparingOrder",
+        "summary": "Move an order to preparing",
+        "tags": [
+          "orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated order detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Illegal state transition from the order's current status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/ready": {
+      "post": {
+        "operationId": "readyOrder",
+        "summary": "Mark an order ready",
+        "tags": [
+          "orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated order detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Illegal state transition from the order's current status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/complete": {
+      "post": {
+        "operationId": "completeOrder",
+        "summary": "Complete an order",
+        "tags": [
+          "orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated order detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Illegal state transition from the order's current status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/orders/{id}/cancel": {
+      "post": {
+        "operationId": "cancelOrder",
+        "summary": "Cancel an order",
+        "tags": [
+          "orders"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Updated order detail",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Illegal state transition from the order's current status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }

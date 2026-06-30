@@ -1,0 +1,3 @@
+# Copy to .dev.vars (gitignored). wrangler dev injects these as Worker bindings.
+# Same Neon connection string as the repo-root .env.
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DBNAME?sslmode=require

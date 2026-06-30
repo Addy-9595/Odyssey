@@ -1,4 +1,5 @@
 import { createRoute, z, type OpenAPIHono } from "@hono/zod-openapi";
+import type { Bindings } from "../env.ts";
 
 /**
  * Static service health check. Touches no table and contains no business logic
@@ -30,6 +31,6 @@ const getHealthRoute = createRoute({
   },
 });
 
-export function registerHealthRoutes(app: OpenAPIHono) {
+export function registerHealthRoutes(app: OpenAPIHono<{ Bindings: Bindings }>) {
   app.openapi(getHealthRoute, (c) => c.json({ status: "ok" as const }, 200));
 }

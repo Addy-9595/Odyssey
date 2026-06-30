@@ -28,9 +28,8 @@ export default defineConfig({
           // Return the parsed body (T) from hooks, not { data, status, headers }.
           includeHttpResponseReturnType: false,
         },
-        query: {
-          useQuery: true,
-        },
+        // No global query override: let Orval pick per method — GET -> useQuery,
+        // POST/action endpoints -> useMutation.
       },
     },
   },
