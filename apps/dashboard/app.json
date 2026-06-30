@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Odyssey",
+    "slug": "odyssey-dashboard",
+    "scheme": "odyssey",
+    "version": "0.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}

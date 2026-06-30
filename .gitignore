@@ -1,3 +1,9 @@
+# Monorepo build tooling
+.turbo/
+.expo/
+dist/
+web-build/
+
 # Logs
 logs
 *.log

@@ -1,0 +1,58 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Odyssey API",
+    "version": "0.0.0",
+    "description": "Restaurant operations API — pipeline spike."
+  },
+  "components": {
+    "schemas": {
+      "Ping": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "message"
+        ],
+        "example": {
+          "id": 1,
+          "message": "pong"
+        }
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/ping": {
+      "get": {
+        "operationId": "getPing",
+        "summary": "Health-check ping",
+        "description": "Pipeline-spike endpoint. Returns a single Ping shaped by the drizzle-zod-derived contract. No DB access yet.",
+        "tags": [
+          "ping"
+        ],
+        "responses": {
+          "200": {
+            "description": "A ping",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Ping"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

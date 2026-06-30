@@ -1,0 +1,17 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "tasks": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "gen:contract": {
+      "outputs": ["openapi.json", "src/generated/**"]
+    },
+    "lint": {},
+    "typecheck": {
+      "dependsOn": ["^gen:contract"]
+    },
+    "test": {}
+  }
+}
