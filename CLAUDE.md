@@ -135,3 +135,30 @@ Before building the real backend, VERIFY the currently-published versions of `dr
 - Move in small, reviewed increments. Do not emit the entire repo in one pass.
 - After each chunk, the human reviews before moving on.
 - When running terminal commands that touch git, the database, or migrations, surface them for review first.
+
+## Remaining work / known gaps (keep current)
+
+These are KNOWN INCOMPLETE and must not be treated as done just because a script exits 0:
+
+- **Lint is faked.** Every package's `lint` script is currently `echo "no lint yet"`. No linter is installed. Real ESLint (TypeScript-aware, monorepo-wide) must be wired AFTER the schema exists and BEFORE the pages are built. `pnpm lint` passing today means nothing.
+- **Tests are faked.** Every package's `test` script is currently `echo "no tests in spike"`. No test runner exists. The real runner (e.g. Vitest) gets set up at step 4, TOGETHER with the first real backend tests (server-side total calculation, rejected/invalid state transitions). Do not set up a runner with nothing to run, and do not leave it as an echo at submission.
+
+## Locked design decisions (do not re-litigate)
+
+These were decided deliberately. Implement them as stated; do not "simplify" them away.
+
+- **Money is integer cents everywhere.** Never float/decimal/numeric for any monetary value.
+- **`order_items.unit_price` is snapshotted at order time** — the price captured when the order is placed, NOT a live lookup of the menu item's current price. Past orders must not change when menu prices change.
+- **`orders.total` is stored but computed server-side** from order items' snapshotted prices. Never trust a client-sent total.
+- **Customer spend is computed on read** by aggregating the customer's orders. There is NO stored `total_spend` column.
+- **`settings` is a single-row (singleton) table with typed columns**, not key-value.
+- **`order_status` enum** (defined once as a `pgEnum`): `pending`, `confirmed`, `preparing`, `ready`, `completed`, `cancelled`.
+- **`order_type` enum**: `dine_in`, `takeaway`, `delivery` (display/filter only, no behavior attached).
+- **Order state machine (server-enforced allowed transitions):**
+  - Forward, one step at a time, no skipping: `pending -> confirmed -> preparing -> ready -> completed`.
+  - Cancel allowed from: `pending`, `confirmed`, `preparing`.
+  - Cancel NOT allowed from: `ready`, `completed`.
+  - Terminal states: `completed`, `cancelled` (nothing leaves them).
+  - Everything else (skips, backward moves, exits from terminal states) is rejected.
+- **Payment/billing is OUT OF SCOPE.** No payment status, payment method, or refund logic. Note this in the tradeoffs doc.
+- **Node stays at 20.18.0** despite Expo SDK 57 preferring >=20.19.4 (warning only, no observed issues). Note in tradeoffs doc.
