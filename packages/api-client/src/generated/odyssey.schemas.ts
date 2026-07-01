@@ -106,6 +106,17 @@ export type OrderItemDetail = OrderItem & {
   menuItem: MenuItem;
 };
 
+export type OrderAction = typeof OrderAction[keyof typeof OrderAction];
+
+
+export const OrderAction = {
+  confirm: 'confirm',
+  preparing: 'preparing',
+  ready: 'ready',
+  complete: 'complete',
+  cancel: 'cancel',
+} as const;
+
 export interface OrderDetail {
   /**
      * @minimum -2147483648
@@ -128,6 +139,7 @@ export interface OrderDetail {
   updatedAt: string;
   customer: Customer;
   items: OrderItemDetail[];
+  allowedActions: OrderAction[];
 }
 
 export interface ErrorResponse {

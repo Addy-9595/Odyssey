@@ -63,3 +63,17 @@ export const ORDER_ACTION_TARGET = {
 } as const satisfies Record<string, OrderStatus>;
 
 export type OrderAction = keyof typeof ORDER_ACTION_TARGET;
+
+/** All action names in a stable order, derived from the target map (single source). */
+export const ORDER_ACTIONS = Object.keys(ORDER_ACTION_TARGET) as OrderAction[];
+
+/**
+ * Computes which actions are legal from a given status — the actions whose
+ * target status passes `canTransition`. Computed on read, never stored (same
+ * principle as customer spend). Keeps transition logic in its single home.
+ */
+export function computeAllowedActions(status: OrderStatus): OrderAction[] {
+  return ORDER_ACTIONS.filter((action) =>
+    canTransition(status, ORDER_ACTION_TARGET[action]),
+  );
+}

@@ -8,6 +8,10 @@ import {
   orderStatus,
   orderType,
 } from "../db/schema.ts";
+import {
+  ORDER_ACTIONS,
+  type OrderAction,
+} from "../domain/order-transitions.ts";
 
 /**
  * All API shapes for the orders slice. Response schemas are DERIVED from the
@@ -21,6 +25,12 @@ export const OrderStatusSchema = z
   .openapi("OrderStatus");
 
 export const OrderTypeSchema = z.enum(orderType.enumValues).openapi("OrderType");
+
+// Action names surfaced to the client. Derived from ORDER_ACTIONS (itself
+// derived from ORDER_ACTION_TARGET) so it can never drift from the state machine.
+export const OrderActionSchema = z
+  .enum(ORDER_ACTIONS as [OrderAction, ...OrderAction[]])
+  .openapi("OrderAction");
 
 /* -------------------------------------------------------------------------- */
 /* Entity schemas (drizzle-zod derived)                                       */
@@ -50,11 +60,13 @@ export const OrderListItemSchema = orderBase
   .extend({ customer: CustomerSchema })
   .openapi("OrderListItem");
 
-// Detail: the order with its items (snapshotted unit prices) and customer.
+// Detail: the order with its items (snapshotted unit prices) and customer,
+// plus the server-computed set of legal next actions (computed on read).
 export const OrderDetailSchema = orderBase
   .extend({
     customer: CustomerSchema,
     items: z.array(OrderItemDetailSchema),
+    allowedActions: z.array(OrderActionSchema),
   })
   .openapi("OrderDetail");
 

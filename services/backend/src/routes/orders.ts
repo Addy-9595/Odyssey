@@ -14,6 +14,7 @@ import { ErrorResponseSchema, errorBody } from "../contract/errors.ts";
 import { computeOrderTotal } from "../domain/order-total.ts";
 import {
   canTransition,
+  computeAllowedActions,
   ORDER_ACTION_TARGET,
   type OrderAction,
   type OrderStatus,
@@ -25,8 +26,8 @@ type App = OpenAPIHono<{ Bindings: Bindings }>;
 /* Shared helpers                                                             */
 /* -------------------------------------------------------------------------- */
 
-/** Loads an order with its customer and items (each item with its menu item). */
-function loadOrderDetail(db: PoolDb, id: number) {
+/** Raw order+customer+items query. */
+function loadOrderDetailRow(db: PoolDb, id: number) {
   return db.query.orders.findFirst({
     where: eq(orders.id, id),
     with: {
@@ -34,6 +35,18 @@ function loadOrderDetail(db: PoolDb, id: number) {
       items: { with: { menuItem: true } },
     },
   });
+}
+
+/**
+ * Loads an order detail and attaches the server-computed `allowedActions` for
+ * its CURRENT status. This is the ONE enrichment point every OrderDetail
+ * response flows through (createOrder, getOrder, and all five action handlers
+ * via applyOrderAction), so no return site can forget allowedActions.
+ */
+async function loadOrderDetail(db: PoolDb, id: number) {
+  const row = await loadOrderDetailRow(db, id);
+  if (!row) return undefined;
+  return { ...row, allowedActions: computeAllowedActions(row.status) };
 }
 
 type OrderDetailRow = NonNullable<Awaited<ReturnType<typeof loadOrderDetail>>>;

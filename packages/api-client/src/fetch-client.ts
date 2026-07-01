@@ -15,7 +15,17 @@ function getApiBaseUrl(): string {
   return (fromEnv ?? "http://localhost:8787").replace(/\/$/, "");
 }
 
+/**
+ * Thrown on non-2xx responses. Fields mirror the API's ErrorResponse shape
+ * ({ error, code, details }) extracted from the body, so a React Query `error`
+ * typed as the generated `ErrorResponse` reads correctly at runtime — while
+ * still being a real Error (kept for `only-throw-error` and stack traces).
+ */
 export class ApiError extends Error {
+  readonly code: string;
+  readonly error: string;
+  readonly details?: string[];
+
   constructor(
     public status: number,
     public statusText: string,
@@ -23,6 +33,16 @@ export class ApiError extends Error {
   ) {
     super(`API ${status} ${statusText}`);
     this.name = "ApiError";
+    const b = (body ?? {}) as {
+      code?: unknown;
+      error?: unknown;
+      details?: unknown;
+    };
+    this.code = typeof b.code === "string" ? b.code : "HTTP_ERROR";
+    this.error = typeof b.error === "string" ? b.error : `${status} ${statusText}`;
+    this.details = Array.isArray(b.details)
+      ? b.details.filter((d): d is string => typeof d === "string")
+      : undefined;
   }
 }
 

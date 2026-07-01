@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Pressable, View } from "react-native";
-import { Link, usePathname } from "expo-router";
+import { Link, usePathname, type Href } from "expo-router";
 import {
   Text,
   VStack,
@@ -15,7 +15,7 @@ const SIDEBAR_WIDTH = 240;
 
 interface NavEntry {
   label: string;
-  href: string;
+  href: Href;
 }
 
 // User-logical display order (not build order).
@@ -30,9 +30,10 @@ const PRIMARY_NAV: NavEntry[] = [
 // Set slightly apart at the bottom — a reviewer opens it directly.
 const DEV_NAV: NavEntry[] = [{ label: "UI Library", href: "/ui-library" }];
 
-function isActive(href: string, pathname: string): boolean {
-  if (href === "/") return pathname === "/";
-  return pathname === href || pathname.startsWith(`${href}/`);
+function isActive(href: Href, pathname: string): boolean {
+  const target = typeof href === "string" ? href : href.pathname;
+  if (target === "/") return pathname === "/";
+  return pathname === target || pathname.startsWith(`${target}/`);
 }
 
 function NavItem({ label, href, active }: NavEntry & { active: boolean }) {
@@ -97,7 +98,7 @@ export function NavShell({ children }: { children: ReactNode }) {
           <VStack gap="xxs">
             {PRIMARY_NAV.map((entry) => (
               <NavItem
-                key={entry.href}
+                key={entry.label}
                 {...entry}
                 active={isActive(entry.href, pathname)}
               />
@@ -117,7 +118,7 @@ export function NavShell({ children }: { children: ReactNode }) {
             />
             {DEV_NAV.map((entry) => (
               <NavItem
-                key={entry.href}
+                key={entry.label}
                 {...entry}
                 active={isActive(entry.href, pathname)}
               />

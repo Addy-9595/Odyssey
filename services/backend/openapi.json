@@ -64,6 +64,12 @@
             "items": {
               "$ref": "#/components/schemas/OrderItemDetail"
             }
+          },
+          "allowedActions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderAction"
+            }
           }
         },
         "required": [
@@ -75,7 +81,8 @@
           "createdAt",
           "updatedAt",
           "customer",
-          "items"
+          "items",
+          "allowedActions"
         ]
       },
       "OrderStatus": {
@@ -223,6 +230,16 @@
           "menuItemId",
           "quantity",
           "unitPriceCents"
+        ]
+      },
+      "OrderAction": {
+        "type": "string",
+        "enum": [
+          "confirm",
+          "preparing",
+          "ready",
+          "complete",
+          "cancel"
         ]
       },
       "ErrorResponse": {
