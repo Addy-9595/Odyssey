@@ -2,6 +2,10 @@
 
 A fullstack restaurant operations dashboard — Expo + React Native (web) frontend, Hono on Cloudflare Workers backend, Neon Postgres, with a one-directional codegen pipeline from the database schema to generated frontend hooks.
 
+## Walkthrough
+
+[3-minute Loom demo](https://www.loom.com/share/0442e69f71bd437fbaa95e8df8edd0b3)
+
 ## Prerequisites
 
 - **Node 20.18.0** (pinned; see [TRADEOFFS.md](./TRADEOFFS.md) for why)
