@@ -26,7 +26,7 @@ Pinned deliberately. A casual `pnpm update` could break the pipeline if these dr
 
 ## Money as integer cents
 
-Every monetary value (menu prices, order line unit prices, order totals) is stored and transmitted as an **integer count of cents**. No floats, no decimals, no `numeric` types. Columns are suffixed `_cents` to make this unmissable in the schema.
+Every monetary value (menu prices, order line unit prices, order totals, customer spend aggregates) is stored and transmitted as an **integer count of cents**. No floats, no decimals, no `numeric` types. Columns are suffixed `_cents` to make this unmissable in the schema.
 
 Formatting to `$12.90` happens at the display layer only (`formatMoney` in `packages/shared`), using `Intl.NumberFormat`. The number that travels through the API, the database, and the codegen chain is always an integer.
 
@@ -68,6 +68,30 @@ The computation is attached at a single enrichment point (`loadOrderDetail`), so
 
 `OrderAction` is a generated enum (derived from `ORDER_ACTION_TARGET`), so the frontend's `satisfies Record<OrderAction, string>` exhaustiveness check on button labels catches any new action at compile time.
 
+## Computed-on-read aggregates (no stored totals)
+
+Customer spend (`totalSpendCents`) and order count are not stored columns. They are computed on read by aggregating the customer's orders (`SUM(total_cents)`, `COUNT(id)`). This avoids write-time maintenance of a running total that can drift from the order data.
+
+The same principle applies to the dashboard stats endpoint: total revenue, orders-by-status counts, and popular items are all computed from the orders and order_items tables, never cached in a summary table.
+
+## Settings singleton
+
+The `settings` table uses a `CHECK (id = 1)` constraint ensuring at most one row can ever exist. The seed inserts it; the app reads it. `GET /settings` returns the row; `PATCH /settings` updates it with the same partial-update pattern as menu items (`strictObject.partial()`, reject empty body, reject unknown fields).
+
+Two settings have live behavioral effects:
+
+### `autoAcceptOrders` — initial order status
+Extracted as a pure function `initialStatusFor(settings)` in `src/domain/order-initial-status.ts`, consistent with the `computeOrderTotal` pattern. The function is trivial (one ternary), but extracting it makes the behavior testable without a route harness, documents the logic in one place, and keeps the create handler focused on orchestration. Three unit tests cover the cases: undefined settings → pending, false → pending, true → confirmed.
+
+### `serviceAvailable` — order creation guard
+Checked at the top of `POST /orders`, before any business logic (customer lookup, menu item validation, total computation). When false, the endpoint short-circuits with `422 SERVICE_UNAVAILABLE`. This ordering is deliberate: rejecting a closed restaurant should not waste a database round-trip validating the order payload.
+
+### `openingHours` — read-only
+Stored as typed JSONB (`Record<Weekday, { open: string | null; close: string | null }>`). Served in `GET /settings` with an explicit Zod schema so Orval emits a usable TypeScript type. Excluded from `PATCH /settings` — `strictObject` rejects it. The UI displays hours; it does not edit them.
+
+### `defaultPrepTimeMinutes` — config, not behavior
+Editable via the settings page and persisted. Not currently read by any backend logic — no flow computes estimated ready times. Stored as configuration for a future feature, displayed honestly as a number.
+
 ## Enum display discipline
 
 The design system (`packages/shared`) is generic — it has no dependency on the API client. Status colors are keyed by generic string; the `StatusBadge` doesn't know about `OrderStatus`.
@@ -77,6 +101,8 @@ The **dashboard** (which can import the generated client) bridges the gap with e
 - Adding a new enum value in the Drizzle schema propagates through generation and causes a **compile error** at the label map if the label is missing.
 - `shared` stays reusable and dependency-free.
 - No string transforms that guess formatting — every display label is explicit.
+
+Label maps live in `apps/dashboard/src/orders/labels.ts` and are covered by runtime tests that verify exact coverage against the generated enum values (no missing labels, no stale extras).
 
 ## Styling: RN StyleSheet + tokens (no NativeWind)
 
@@ -104,4 +130,6 @@ Generated code (`packages/api-client/src/generated/**`) is fully ignored — not
 
 ## Cache strategy after mutations
 
-Status actions and order creation use the same pattern: the mutation returns a fresh `OrderDetail`, which is used to **seed the detail cache** via `setQueryData`, then the list is **invalidated** via `invalidateQueries` (prefix-match on the list key, covering all filter variants). This avoids a stale detail after an action and a stale list after navigation, with one round-trip instead of two refetches.
+Status actions, order creation, menu item updates, and settings changes use the same pattern: the mutation returns the fresh entity, which is used to **seed the detail/singleton cache** via `setQueryData`, then related lists are **invalidated** via `invalidateQueries` (prefix-match on the list key, covering all filter variants). This avoids a stale detail after an action and a stale list after navigation, with one round-trip instead of two refetches.
+
+Settings mutations use separate mutation instances for inline toggles vs. explicit Save actions (same pattern as the Menu page), so pending states don't interfere across controls.

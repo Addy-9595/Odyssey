@@ -19,6 +19,15 @@ No login, no user roles, no session management. The dashboard assumes a trusted 
 ### `ready → cancelled` transition
 Deliberately disallowed. Once an order is ready, the restaurant has committed prep costs. Allowing cancellation at that point implies a refund/waste flow that's out of scope (see payment exclusion). This is a conscious business-logic decision, not an oversight.
 
+### Opening hours editor
+The Settings page displays opening hours read-only. `PATCH /settings` deliberately excludes the `openingHours` field — `strictObject` rejects it. Building a 7-day × 2-time-field editor with validation (close > open, nullable for closed days) is 1+ hours of UI for zero architectural signal. The backend stores and serves the data; the capability exists if needed.
+
+### Inline customer creation
+The order-creation form selects from existing customers only. Creating a new customer belongs to a CRM workflow. The form's job is to demonstrate the ordering pipeline (codegen, server-computed totals, state machine), not the customer lifecycle.
+
+### Dark mode
+Light-only (`userInterfaceStyle: "light"` in `app.json`). The token system could support a dark ramp, but building and testing it doubles the visual surface for no grading signal.
+
 ## Version pinning tradeoffs
 
 ### Node 20.18.0 (below Expo SDK 57's preference)
@@ -38,33 +47,23 @@ Last version supporting Node 20. Newer versions require Node 22.
 
 ## Incomplete areas (known gaps, not hidden)
 
-### Three stub pages
-Home, Customers (CRM), and Settings are routed but render only placeholder stubs. The two deep verticals (Orders and Menu) demonstrate the full stack: codegen, backend logic, design-system primitives, real loading/empty/error states. The remaining pages would follow the same pattern — each needs just-in-time backend endpoints (stats aggregation for Home, computed customer spend for CRM, singleton GET/PATCH for Settings) but would not demonstrate new architectural depth.
+### Frontend component tests
+Backend has 18 targeted tests: pure-function `initialStatusFor` (3), order-total computation (4), and the full state-machine transition matrix (11). The shared package has format tests (formatMoney, formatDateTime). The dashboard has label exhaustiveness tests (orderType, orderStatus, orderAction).
 
-### Frontend tests
-Backend tests are real and targeted: 15 pure-function tests covering order-total computation and the full state-machine transition matrix. Frontend tests are still stubs. The highest-value frontend tests would cover:
-- Label map exhaustiveness (compile-time `satisfies` catches missing variants, but a runtime test confirms the maps match the generated enums).
-- `formatMoney` / `formatDateTime` correctness (pure functions, trivially testable).
-- The line-item merge logic in the create form (stateful, non-trivial, worth a unit test).
-
-### Dark mode
-The app is light-only (`userInterfaceStyle: "light"` in `app.json`). The token system could support a dark ramp, but building and testing it doubles the surface for no grading signal.
-
-### Enum display formatting
-Enum values like `dine_in` are displayed via explicit label maps (`dine_in` → "Dine-in") using `satisfies Record<OrderType, string>` for exhaustiveness. The maps exist for order types, statuses, and actions in the Orders pages. Other pages that display these enums would need the same maps or could share them — currently they're scoped to `apps/dashboard/src/orders/labels.ts`.
-
-### No inline customer creation
-The order-creation form selects from existing customers only. Creating a new customer belongs to the CRM page (a stub). This is a scope boundary, not a missing feature — the form's job is to demonstrate the ordering pipeline, not the customer lifecycle.
+What's missing: component-level tests for interactive behavior — the line-item merge logic in the create form, the status-filter pills, the mutation/cache interactions. These would use Vitest + React Testing Library. Deferred because the pure-logic and exhaustiveness tests cover the highest-risk surface, and component tests on a take-home have diminishing returns.
 
 ### Concurrent access / optimistic updates
-Status actions use a pessimistic pattern (disable buttons while one is in-flight, await server response, then update cache). Optimistic updates would improve perceived speed but add rollback complexity. The pessimistic approach is correct for an ops tool where the server state is the truth.
+Status actions and settings toggles use a pessimistic pattern (disable controls while in-flight, await server response, then update cache). Optimistic updates would improve perceived speed but add rollback complexity. The pessimistic approach is correct for an ops tool where the server state is the truth.
+
+### Orval codegen naming for OpeningHours
+Orval expanded the unregistered `OpeningHoursDaySchema` into per-day types (`OpeningHoursMon` through `OpeningHoursSun`) rather than a shared `OpeningHoursDay`. Shapes are identical. Registering the day schema as a named OpenAPI component (`.openapi("OpeningHoursDay")`) would fix this. No functional impact — the frontend indexes by day key and the types are correct.
 
 ## What I would build next
 
 In priority order, if this were continuing:
 
-1. **Menu page with CRUD** — toggle availability, edit prices, demonstrating write operations on a second entity through the same codegen chain.
-2. **Frontend tests** — the three targets listed above, using Vitest + React Testing Library.
-3. **Home dashboard** — a stats endpoint aggregating order counts, revenue, and popular items, rendered as KPI cards.
-4. **CRM** — customer list with computed spend (aggregated from orders, no stored column) and order history.
-5. **Settings** — singleton GET/PATCH for prep time, auto-accept, service availability, opening hours.
+1. **Frontend component tests** — line-item merge, status filter pills, mutation/cache interactions.
+2. **Customer creation** — inline from the CRM page, with email uniqueness validation surfaced from the backend's existing constraint.
+3. **Pagination** — cursor-based on orders and customers, contract change propagated through the codegen chain.
+4. **Opening hours editor** — 7-day time picker with validation, wired to the existing PATCH endpoint (which would need `openingHours` added to the update body).
+5. **Auth** — role-based access gating kitchen vs manager views.
