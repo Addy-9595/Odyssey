@@ -30,18 +30,11 @@ import {
   accent,
   color,
   formatMoney,
+  parseDollarsToCents,
   spacing,
   useToast,
   type Column,
 } from "@odyssey/shared";
-
-/** "12.90" (dollars) -> 1290 (cents). Returns null if not a positive amount. */
-function parseDollarsToCents(text: string): number | null {
-  const trimmed = text.trim();
-  if (!/^\d+(\.\d{1,2})?$/.test(trimmed)) return null;
-  const cents = Math.round(Number.parseFloat(trimmed) * 100);
-  return Number.isInteger(cents) && cents >= 1 ? cents : null;
-}
 
 export default function MenuScreen() {
   const queryClient = useQueryClient();

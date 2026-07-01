@@ -33,17 +33,11 @@ import {
   type Column,
 } from "@odyssey/shared";
 import { orderTypeLabel } from "../../src/orders/labels.ts";
-
-/**
- * A line the user is building locally. We store ONLY what the create body
- * needs (menuItemId + quantity); the display fields (name, price) are resolved
- * from the fetched menu list so there is a single source for item data and the
- * request body can never carry a price or a total.
- */
-interface DraftLine {
-  menuItemId: number;
-  quantity: number;
-}
+import {
+  addDraftLine,
+  removeDraftLine,
+  type DraftLine,
+} from "../../src/orders/draft-lines.ts";
 
 export default function NewOrderScreen() {
   const router = useRouter();
@@ -115,24 +109,13 @@ export default function NewOrderScreen() {
   function addLine() {
     if (!selectedItem || !selectedItem.isAvailable || !qtyValid) return;
     const menuItemId = selectedItem.id;
-    setLines((prev) => {
-      const existing = prev.find((l) => l.menuItemId === menuItemId);
-      if (existing) {
-        // Merge: same item adds sum into one line.
-        return prev.map((l) =>
-          l.menuItemId === menuItemId
-            ? { ...l, quantity: l.quantity + parsedQty }
-            : l,
-        );
-      }
-      return [...prev, { menuItemId, quantity: parsedQty }];
-    });
+    setLines((prev) => addDraftLine(prev, menuItemId, parsedQty));
     setPickerItemId(undefined);
     setQtyText("1");
   }
 
   function removeLine(menuItemId: number) {
-    setLines((prev) => prev.filter((l) => l.menuItemId !== menuItemId));
+    setLines((prev) => removeDraftLine(prev, menuItemId));
   }
 
   const canSubmit =

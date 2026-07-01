@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatMoney, formatDateTime } from "./format.ts";
+import { formatMoney, formatDateTime, parseDollarsToCents } from "./format.ts";
 
 describe("formatMoney", () => {
   it("formats a standard amount with a dollar sign and two decimals", () => {
@@ -46,4 +46,20 @@ describe("formatDateTime", () => {
   it("includes a comma separating the medium date from the time", () => {
     expect(formatted).toContain(",");
   });
+});
+
+describe("parseDollarsToCents", () => {
+  // Valid inputs
+  it("parses a standard dollar amount", () => { expect(parseDollarsToCents("12.90")).toBe(1290); });
+  it("parses a whole dollar amount", () => { expect(parseDollarsToCents("10")).toBe(1000); });
+  it("parses a single cent", () => { expect(parseDollarsToCents("0.01")).toBe(1); });
+  it("parses one decimal place", () => { expect(parseDollarsToCents("5.5")).toBe(550); });
+
+  // Invalid inputs → null
+  it("rejects empty string", () => { expect(parseDollarsToCents("")).toBeNull(); });
+  it("rejects zero", () => { expect(parseDollarsToCents("0")).toBeNull(); });
+  it("rejects negative", () => { expect(parseDollarsToCents("-5")).toBeNull(); });
+  it("rejects non-numeric", () => { expect(parseDollarsToCents("abc")).toBeNull(); });
+  it("rejects three decimal places", () => { expect(parseDollarsToCents("12.901")).toBeNull(); });
+  it("trims whitespace before parsing", () => { expect(parseDollarsToCents("  12.90  ")).toBe(1290); });
 });
