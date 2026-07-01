@@ -419,6 +419,85 @@
         "example": {
           "isAvailable": false
         }
+      },
+      "DashboardStats": {
+        "type": "object",
+        "properties": {
+          "totalOrders": {
+            "type": "integer"
+          },
+          "totalRevenueCents": {
+            "type": "integer"
+          },
+          "ordersByStatus": {
+            "$ref": "#/components/schemas/OrdersByStatus"
+          },
+          "recentOrders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderListItem"
+            }
+          },
+          "popularItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PopularItem"
+            }
+          }
+        },
+        "required": [
+          "totalOrders",
+          "totalRevenueCents",
+          "ordersByStatus",
+          "recentOrders",
+          "popularItems"
+        ]
+      },
+      "OrdersByStatus": {
+        "type": "object",
+        "properties": {
+          "pending": {
+            "type": "integer"
+          },
+          "confirmed": {
+            "type": "integer"
+          },
+          "preparing": {
+            "type": "integer"
+          },
+          "ready": {
+            "type": "integer"
+          },
+          "completed": {
+            "type": "integer"
+          },
+          "cancelled": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "pending",
+          "confirmed",
+          "preparing",
+          "ready",
+          "completed",
+          "cancelled"
+        ]
+      },
+      "PopularItem": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "totalQuantity": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "name",
+          "totalQuantity"
+        ]
       }
     },
     "parameters": {}
@@ -1059,6 +1138,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stats": {
+      "get": {
+        "operationId": "getDashboardStats",
+        "summary": "Dashboard overview statistics",
+        "tags": [
+          "dashboard"
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardStats"
                 }
               }
             }

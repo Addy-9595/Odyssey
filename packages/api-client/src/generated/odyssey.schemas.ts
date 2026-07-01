@@ -224,6 +224,28 @@ export interface UpdateMenuItemBody {
   categoryId?: number;
 }
 
+export interface OrdersByStatus {
+  pending: number;
+  confirmed: number;
+  preparing: number;
+  ready: number;
+  completed: number;
+  cancelled: number;
+}
+
+export interface PopularItem {
+  name: string;
+  totalQuantity: number;
+}
+
+export interface DashboardStats {
+  totalOrders: number;
+  totalRevenueCents: number;
+  ordersByStatus: OrdersByStatus;
+  recentOrders: OrderListItem[];
+  popularItems: PopularItem[];
+}
+
 export type ListOrdersParams = {
 status?: OrderStatus;
 type?: OrderType;
