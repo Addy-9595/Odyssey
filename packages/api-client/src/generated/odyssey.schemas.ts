@@ -252,6 +252,69 @@ export interface DashboardStats {
   popularItems: PopularItem[];
 }
 
+export type OpeningHoursMon = {
+  open: string | null;
+  close: string | null;
+};
+
+export type OpeningHoursTue = {
+  open: string | null;
+  close: string | null;
+};
+
+export type OpeningHoursWed = {
+  open: string | null;
+  close: string | null;
+};
+
+export type OpeningHoursThu = {
+  open: string | null;
+  close: string | null;
+};
+
+export type OpeningHoursFri = {
+  open: string | null;
+  close: string | null;
+};
+
+export type OpeningHoursSat = {
+  open: string | null;
+  close: string | null;
+};
+
+export type OpeningHoursSun = {
+  open: string | null;
+  close: string | null;
+};
+
+export interface OpeningHours {
+  mon: OpeningHoursMon;
+  tue: OpeningHoursTue;
+  wed: OpeningHoursWed;
+  thu: OpeningHoursThu;
+  fri: OpeningHoursFri;
+  sat: OpeningHoursSat;
+  sun: OpeningHoursSun;
+}
+
+export interface Settings {
+  id: number;
+  defaultPrepTimeMinutes: number;
+  autoAcceptOrders: boolean;
+  serviceAvailable: boolean;
+  openingHours: OpeningHours;
+}
+
+export interface UpdateSettingsBody {
+  /**
+     * @minimum 0
+     * @exclusiveMinimum
+     */
+  defaultPrepTimeMinutes?: number;
+  autoAcceptOrders?: boolean;
+  serviceAvailable?: boolean;
+}
+
 export type ListOrdersParams = {
 status?: OrderStatus;
 type?: OrderType;

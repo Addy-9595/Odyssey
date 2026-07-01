@@ -12,6 +12,7 @@ import {
 } from "../contract/orders.ts";
 import { ErrorResponseSchema, errorBody } from "../contract/errors.ts";
 import { computeOrderTotal } from "../domain/order-total.ts";
+import { initialStatusFor } from "../domain/order-initial-status.ts";
 import {
   canTransition,
   computeAllowedActions,
@@ -117,7 +118,7 @@ const createOrderRoute = createRoute({
     },
     400: jsonError("Invalid payload"),
     422: jsonError(
-      "Unprocessable: customer or menu item missing, or item unavailable",
+      "Unprocessable: service unavailable, customer or menu item missing, or item unavailable",
     ),
   },
 });
@@ -192,6 +193,19 @@ export function registerOrderRoutes(app: App) {
   app.openapi(createOrderRoute, async (c) => {
     const body = c.req.valid("json");
     return withDb(c.env.DATABASE_URL, async (db) => {
+      // 0. The restaurant must currently be accepting orders. Read the
+      // singleton settings first; it also drives the initial status below.
+      const settingsRow = await db.query.settings.findFirst();
+      if (settingsRow && !settingsRow.serviceAvailable) {
+        return c.json(
+          errorBody(
+            "SERVICE_UNAVAILABLE",
+            "The restaurant is not currently accepting orders",
+          ),
+          422,
+        );
+      }
+
       // 1. Customer must exist.
       const customer = await db.query.customers.findFirst({
         where: eq(customers.id, body.customerId),
@@ -244,10 +258,7 @@ export function registerOrderRoutes(app: App) {
       const totalCents = computeOrderTotal(lines);
 
       // 4. Initial status comes from settings, never from the client.
-      const settingsRow = await db.query.settings.findFirst();
-      const initialStatus: OrderStatus = settingsRow?.autoAcceptOrders
-        ? "confirmed"
-        : "pending";
+      const initialStatus = initialStatusFor(settingsRow ?? undefined);
 
       // 5. Order + items commit atomically — no half-orders.
       const createdId = await db.transaction(async (tx) => {

@@ -527,6 +527,186 @@
           "name",
           "totalQuantity"
         ]
+      },
+      "Settings": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "defaultPrepTimeMinutes": {
+            "type": "integer"
+          },
+          "autoAcceptOrders": {
+            "type": "boolean"
+          },
+          "serviceAvailable": {
+            "type": "boolean"
+          },
+          "openingHours": {
+            "$ref": "#/components/schemas/OpeningHours"
+          }
+        },
+        "required": [
+          "id",
+          "defaultPrepTimeMinutes",
+          "autoAcceptOrders",
+          "serviceAvailable",
+          "openingHours"
+        ]
+      },
+      "OpeningHours": {
+        "type": "object",
+        "properties": {
+          "mon": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "string",
+                "nullable": true
+              },
+              "close": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "open",
+              "close"
+            ]
+          },
+          "tue": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "string",
+                "nullable": true
+              },
+              "close": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "open",
+              "close"
+            ]
+          },
+          "wed": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "string",
+                "nullable": true
+              },
+              "close": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "open",
+              "close"
+            ]
+          },
+          "thu": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "string",
+                "nullable": true
+              },
+              "close": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "open",
+              "close"
+            ]
+          },
+          "fri": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "string",
+                "nullable": true
+              },
+              "close": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "open",
+              "close"
+            ]
+          },
+          "sat": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "string",
+                "nullable": true
+              },
+              "close": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "open",
+              "close"
+            ]
+          },
+          "sun": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "string",
+                "nullable": true
+              },
+              "close": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "open",
+              "close"
+            ]
+          }
+        },
+        "required": [
+          "mon",
+          "tue",
+          "wed",
+          "thu",
+          "fri",
+          "sat",
+          "sun"
+        ]
+      },
+      "UpdateSettingsBody": {
+        "type": "object",
+        "properties": {
+          "defaultPrepTimeMinutes": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "autoAcceptOrders": {
+            "type": "boolean"
+          },
+          "serviceAvailable": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "example": {
+          "autoAcceptOrders": true
+        }
       }
     },
     "parameters": {}
@@ -592,7 +772,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable: customer or menu item missing, or item unavailable",
+            "description": "Unprocessable: service unavailable, customer or menu item missing, or item unavailable",
             "content": {
               "application/json": {
                 "schema": {
@@ -1242,6 +1422,86 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DashboardStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings": {
+      "get": {
+        "operationId": "getSettings",
+        "summary": "Get restaurant settings",
+        "tags": [
+          "settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Settings"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Settings not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateSettings",
+        "summary": "Update restaurant settings",
+        "tags": [
+          "settings"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Settings"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body or an empty update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Settings not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }

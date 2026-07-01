@@ -157,3 +157,53 @@ export const UpdateMenuItemBodySchema = z
   });
 
 export type UpdateMenuItemBody = z.infer<typeof UpdateMenuItemBodySchema>;
+
+/* -------------------------------------------------------------------------- */
+/* Settings                                                                   */
+/* -------------------------------------------------------------------------- */
+
+// Internal building block — not registered as its own OpenAPI component.
+const OpeningHoursDaySchema = z.object({
+  open: z.string().nullable(),
+  close: z.string().nullable(),
+});
+
+export const OpeningHoursSchema = z
+  .object({
+    mon: OpeningHoursDaySchema,
+    tue: OpeningHoursDaySchema,
+    wed: OpeningHoursDaySchema,
+    thu: OpeningHoursDaySchema,
+    fri: OpeningHoursDaySchema,
+    sat: OpeningHoursDaySchema,
+    sun: OpeningHoursDaySchema,
+  })
+  .openapi("OpeningHours");
+
+// Singleton settings row. openingHours is read-only (no editor this version).
+export const SettingsSchema = z
+  .object({
+    id: z.number().int(),
+    defaultPrepTimeMinutes: z.number().int(),
+    autoAcceptOrders: z.boolean(),
+    serviceAvailable: z.boolean(),
+    openingHours: OpeningHoursSchema,
+  })
+  .openapi("Settings");
+
+export type Settings = z.infer<typeof SettingsSchema>;
+
+// Partial update. strictObject REJECTS unknown fields; openingHours is
+// deliberately NOT accepted here (read-only).
+export const UpdateSettingsBodySchema = z
+  .strictObject({
+    defaultPrepTimeMinutes: z.number().int().positive(),
+    autoAcceptOrders: z.boolean(),
+    serviceAvailable: z.boolean(),
+  })
+  .partial()
+  .openapi("UpdateSettingsBody", {
+    example: { autoAcceptOrders: true },
+  });
+
+export type UpdateSettingsBody = z.infer<typeof UpdateSettingsBodySchema>;

@@ -7,6 +7,7 @@ import { registerOrderRoutes } from "./routes/orders.ts";
 import { registerCustomerRoutes } from "./routes/customers.ts";
 import { registerMenuRoutes } from "./routes/menu.ts";
 import { registerStatsRoutes } from "./routes/stats.ts";
+import { registerSettingsRoutes } from "./routes/settings.ts";
 
 /**
  * Builds the OpenAPIHono app. Shared by the Worker runtime entry (index.ts)
@@ -39,6 +40,7 @@ export function createApp() {
   registerCustomerRoutes(app);
   registerMenuRoutes(app);
   registerStatsRoutes(app);
+  registerSettingsRoutes(app);
 
   return app;
 }
