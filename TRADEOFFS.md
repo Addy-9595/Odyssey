@@ -47,10 +47,10 @@ Last version supporting Node 20. Newer versions require Node 22.
 
 ## Incomplete areas (known gaps, not hidden)
 
-### Frontend component tests
-Backend has 18 targeted tests: pure-function `initialStatusFor` (3), order-total computation (4), and the full state-machine transition matrix (11). The shared package has format tests (formatMoney, formatDateTime). The dashboard has label exhaustiveness tests (orderType, orderStatus, orderAction).
+### Frontend component render tests
+Backend has 18 targeted tests. The shared package has 19 tests (formatMoney, formatDateTime, parseDollarsToCents). The dashboard has 19 tests (label exhaustiveness for all 3 enums, draft-line add/merge/remove logic). Total: 48 tests across all packages.
 
-What's missing: component-level tests for interactive behavior — the line-item merge logic in the create form, the status-filter pills, the mutation/cache interactions. These would use Vitest + React Testing Library. Deferred because the pure-logic and exhaustiveness tests cover the highest-risk surface, and component tests on a take-home have diminishing returns.
+What's missing: React component render tests — mounting components with React Testing Library, simulating user interactions (clicking buttons, toggling switches), and asserting on rendered output. Deferred because the extracted pure-logic tests cover the highest-risk surface, and component render tests on a take-home have diminishing returns.
 
 ### Concurrent access / optimistic updates
 Status actions and settings toggles use a pessimistic pattern (disable controls while in-flight, await server response, then update cache). Optimistic updates would improve perceived speed but add rollback complexity. The pessimistic approach is correct for an ops tool where the server state is the truth.
@@ -62,7 +62,7 @@ Orval expanded the unregistered `OpeningHoursDaySchema` into per-day types (`Ope
 
 In priority order, if this were continuing:
 
-1. **Frontend component tests** — line-item merge, status filter pills, mutation/cache interactions.
+1. **Frontend component render tests** — status filter pill interactions, settings toggle round-trips, order creation form flow with React Testing Library.
 2. **Customer creation** — inline from the CRM page, with email uniqueness validation surfaced from the backend's existing constraint.
 3. **Pagination** — cursor-based on orders and customers, contract change propagated through the codegen chain.
 4. **Opening hours editor** — 7-day time picker with validation, wired to the existing PATCH endpoint (which would need `openingHours` added to the update body).
