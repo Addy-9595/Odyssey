@@ -14,6 +14,7 @@
   "dependencies": {
     "@expo/metro-runtime": "~57.0.2",
     "@odyssey/api-client": "workspace:*",
+    "@odyssey/shared": "workspace:*",
     "@tanstack/react-query": "^5.101.2",
     "expo": "^57.0.0",
     "react": "19.2.3",
