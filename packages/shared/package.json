@@ -9,7 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "lint": "echo \"(shared) no lint yet\"",
+    "lint": "eslint .",
     "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {

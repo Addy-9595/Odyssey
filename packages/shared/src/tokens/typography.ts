@@ -13,13 +13,13 @@ export const fontFamily = {
     ios: "System",
     android: "sans-serif",
     default: "System",
-  }) as string,
+  }),
   mono: Platform.select({
     web: '"SF Mono", "Menlo", "Consolas", "Roboto Mono", ui-monospace, monospace',
     ios: "Menlo",
     android: "monospace",
     default: "monospace",
-  }) as string,
+  }),
 } as const;
 
 export const fontWeight = {

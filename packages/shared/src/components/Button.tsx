@@ -1,9 +1,4 @@
-import {
-  ActivityIndicator,
-  Pressable,
-  View,
-  type ViewStyle,
-} from "react-native";
+import { ActivityIndicator, Pressable, type ViewStyle } from "react-native";
 import { Text } from "./Text.tsx";
 import type { PressableState } from "./_pressable.ts";
 import {

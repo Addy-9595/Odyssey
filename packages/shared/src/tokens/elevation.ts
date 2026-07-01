@@ -9,7 +9,7 @@ function make(web: string, native: ViewStyle): ViewStyle {
   return Platform.select({
     web: { boxShadow: web } as unknown as ViewStyle,
     default: native,
-  }) as ViewStyle;
+  });
 }
 
 export const elevation = {

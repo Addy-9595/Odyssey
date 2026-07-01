@@ -11,7 +11,6 @@ import {
   radii,
   spacing,
   statusColors,
-  typography,
   type StatusColorSet,
   type ElevationToken,
   type RadiusToken,

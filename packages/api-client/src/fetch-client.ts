@@ -39,8 +39,9 @@ export const customInstance = async <T>(
   });
 
   const contentType = response.headers.get("content-type") ?? "";
-  const payload = contentType.includes("application/json")
-    ? await response.json()
+  // response.json() is typed `any`; narrow to unknown so callers must cast.
+  const payload: unknown = contentType.includes("application/json")
+    ? ((await response.json()) as unknown)
     : await response.text();
 
   if (!response.ok) {
