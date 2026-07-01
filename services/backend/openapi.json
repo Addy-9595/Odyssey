@@ -365,6 +365,60 @@
           "updatedAt",
           "customer"
         ]
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "displayOrder": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "displayOrder"
+        ]
+      },
+      "UpdateMenuItemBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceCents": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          },
+          "isAvailable": {
+            "type": "boolean"
+          },
+          "categoryId": {
+            "type": "integer",
+            "minimum": 0,
+            "exclusiveMinimum": true
+          }
+        },
+        "additionalProperties": false,
+        "example": {
+          "isAvailable": false
+        }
       }
     },
     "parameters": {}
@@ -907,6 +961,104 @@
                   "items": {
                     "$ref": "#/components/schemas/MenuItem"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories": {
+      "get": {
+        "operationId": "listCategories",
+        "summary": "List all menu categories in display order",
+        "tags": [
+          "menu"
+        ],
+        "responses": {
+          "200": {
+            "description": "Categories",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Category"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/menu-items/{id}": {
+      "patch": {
+        "operationId": "updateMenuItem",
+        "summary": "Partially update a menu item",
+        "tags": [
+          "menu"
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "exclusiveMinimum": true,
+              "example": 1
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateMenuItemBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated menu item",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MenuItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid id or body, or an empty update",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Menu item not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "categoryId does not reference an existing category",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }

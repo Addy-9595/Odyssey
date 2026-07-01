@@ -192,6 +192,38 @@ export interface OrderListItem {
   customer: Customer;
 }
 
+export interface Category {
+  /**
+     * @minimum -2147483648
+     * @maximum 2147483647
+     */
+  id: number;
+  /** @maxLength 120 */
+  name: string;
+  /**
+     * @minimum -2147483648
+     * @maximum 2147483647
+     */
+  displayOrder: number;
+}
+
+export interface UpdateMenuItemBody {
+  /** @minLength 1 */
+  name?: string;
+  description?: string | null;
+  /**
+     * @minimum 0
+     * @exclusiveMinimum
+     */
+  priceCents?: number;
+  isAvailable?: boolean;
+  /**
+     * @minimum 0
+     * @exclusiveMinimum
+     */
+  categoryId?: number;
+}
+
 export type ListOrdersParams = {
 status?: OrderStatus;
 type?: OrderType;

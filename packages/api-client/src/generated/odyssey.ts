@@ -20,6 +20,7 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  Category,
   CreateOrderBody,
   Customer,
   ErrorResponse,
@@ -27,7 +28,8 @@ import type {
   ListOrdersParams,
   MenuItem,
   OrderDetail,
-  OrderListItem
+  OrderListItem,
+  UpdateMenuItemBody
 } from './odyssey.schemas.ts';
 
 import { customInstance } from '../fetch-client.ts';
@@ -869,4 +871,153 @@ export function useListMenuItems<TData = Awaited<ReturnType<typeof listMenuItems
 
 
 
+
+export const getListCategoriesUrl = () => {
+
+
+
+
+  return `/categories`
+}
+
+/**
+ * @summary List all menu categories in display order
+ */
+export const listCategories = async ( options?: RequestInit): Promise<Category[]> => {
+
+  return customInstance<Category[]>(getListCategoriesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCategoriesQueryKey = () => {
+    return [
+    `/categories`
+    ] as const;
+    }
+
+
+export const getListCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCategoriesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCategories>>> = ({ signal }) => listCategories({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof listCategories>>>
+export type ListCategoriesQueryError = unknown
+
+
+/**
+ * @summary List all menu categories in display order
+ */
+
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = unknown>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>, request?: SecondParameter<typeof customInstance>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListCategoriesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateMenuItemUrl = (id: number,) => {
+
+
+
+
+  return `/menu-items/${id}`
+}
+
+/**
+ * @summary Partially update a menu item
+ */
+export const updateMenuItem = async (id: number,
+    updateMenuItemBody: UpdateMenuItemBody, options?: RequestInit): Promise<MenuItem> => {
+
+  return customInstance<MenuItem>(getUpdateMenuItemUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(updateMenuItemBody)
+  }
+);}
+
+
+
+
+
+export const getUpdateMenuItemMutationOptions = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMenuItem>>, TError,{id: number;data: UpdateMenuItemBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMenuItem>>, TError,{id: number;data: UpdateMenuItemBody}, TContext> => {
+
+const mutationKey = ['updateMenuItem'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMenuItem>>, {id: number;data: UpdateMenuItemBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateMenuItem(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMenuItemMutationResult = NonNullable<Awaited<ReturnType<typeof updateMenuItem>>>
+    export type UpdateMenuItemMutationBody = UpdateMenuItemBody
+    export type UpdateMenuItemMutationError = ErrorResponse
+
+    /**
+ * @summary Partially update a menu item
+ */
+export const useUpdateMenuItem = <TError = ErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMenuItem>>, TError,{id: number;data: UpdateMenuItemBody}, TContext>, request?: SecondParameter<typeof customInstance>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMenuItem>>,
+        TError,
+        {id: number;data: UpdateMenuItemBody},
+        TContext
+      > => {
+      return useMutation(getUpdateMenuItemMutationOptions(options));
+    }
 

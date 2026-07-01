@@ -1,6 +1,7 @@
 import { z } from "@hono/zod-openapi";
 import { createSelectSchema } from "drizzle-zod";
 import {
+  categories,
   customers,
   menuItems,
   orderItems,
@@ -36,6 +37,7 @@ export const OrderActionSchema = z
 /* Entity schemas (drizzle-zod derived)                                       */
 /* -------------------------------------------------------------------------- */
 
+export const CategorySchema = createSelectSchema(categories).openapi("Category");
 export const CustomerSchema = createSelectSchema(customers).openapi("Customer");
 export const MenuItemSchema = createSelectSchema(menuItems).openapi("MenuItem");
 export const OrderItemSchema =
@@ -112,3 +114,29 @@ export const OrderIdParamSchema = z.object({
     example: 1,
   }),
 });
+
+// Path param for the menu-item update endpoint.
+export const MenuItemIdParamSchema = z.object({
+  id: z.coerce.number().int().positive().openapi({
+    param: { name: "id", in: "path" },
+    example: 1,
+  }),
+});
+
+// Partial update for a menu item. strictObject REJECTS unknown fields and the
+// id is never accepted here (it lives in the path). Every field is optional;
+// the route additionally rejects a completely empty body.
+export const UpdateMenuItemBodySchema = z
+  .strictObject({
+    name: z.string().min(1),
+    description: z.string().nullable(),
+    priceCents: z.number().int().positive(),
+    isAvailable: z.boolean(),
+    categoryId: z.number().int().positive(),
+  })
+  .partial()
+  .openapi("UpdateMenuItemBody", {
+    example: { isAvailable: false },
+  });
+
+export type UpdateMenuItemBody = z.infer<typeof UpdateMenuItemBodySchema>;
