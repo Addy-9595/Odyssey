@@ -72,6 +72,15 @@ export const OrderDetailSchema = orderBase
   })
   .openapi("OrderDetail");
 
+// Customer detail: the customer plus spend aggregates COMPUTED ON READ (there
+// is no stored total_spend column — locked design decision) and their order
+// history. Reuses OrderListItemSchema for the history rows.
+export const CustomerDetailSchema = CustomerSchema.extend({
+  totalSpendCents: z.number().int(),
+  orderCount: z.number().int(),
+  orders: z.array(OrderListItemSchema),
+}).openapi("CustomerDetail");
+
 /* -------------------------------------------------------------------------- */
 /* Request schemas                                                            */
 /* -------------------------------------------------------------------------- */
@@ -109,6 +118,14 @@ export const ListOrdersQuerySchema = z.object({
 
 // Path param shared by the detail + action endpoints.
 export const OrderIdParamSchema = z.object({
+  id: z.coerce.number().int().positive().openapi({
+    param: { name: "id", in: "path" },
+    example: 1,
+  }),
+});
+
+// Path param for the customer detail endpoint.
+export const CustomerIdParamSchema = z.object({
   id: z.coerce.number().int().positive().openapi({
     param: { name: "id", in: "path" },
     example: 1,

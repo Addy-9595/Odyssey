@@ -192,6 +192,12 @@ export interface OrderListItem {
   customer: Customer;
 }
 
+export type CustomerDetail = Customer & {
+  totalSpendCents: number;
+  orderCount: number;
+  orders: OrderListItem[];
+};
+
 export interface Category {
   /**
      * @minimum -2147483648
