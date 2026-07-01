@@ -8,6 +8,7 @@ import {
   type OrderListItem,
 } from "@odyssey/api-client";
 import {
+  Button,
   Text,
   VStack,
   HStack,
@@ -139,12 +140,15 @@ export default function OrdersScreen() {
       style={{ flex: 1, backgroundColor: color.background }}
       contentContainerStyle={{ padding: spacing["3xl"], gap: spacing.xl }}
     >
-      <VStack gap="xxs">
-        <Text variant="display">Orders</Text>
-        <Text variant="body" color={color.textSecondary}>
-          Newest first. Select a status or type to filter; click a row to open it.
-        </Text>
-      </VStack>
+      <HStack justify="space-between" align="flex-start" gap="md" wrap>
+        <VStack gap="xxs">
+          <Text variant="display">Orders</Text>
+          <Text variant="body" color={color.textSecondary}>
+            Newest first. Select a status or type to filter; click a row to open it.
+          </Text>
+        </VStack>
+        <Button title="New order" onPress={() => router.push("/orders/new")} />
+      </HStack>
 
       <VStack gap="md">
         <StatusFilterPills value={status} onChange={setStatus} />
