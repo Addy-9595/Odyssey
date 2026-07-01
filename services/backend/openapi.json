@@ -865,6 +865,54 @@
           }
         }
       }
+    },
+    "/customers": {
+      "get": {
+        "operationId": "listCustomers",
+        "summary": "List all customers",
+        "tags": [
+          "customers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Customers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Customer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/menu-items": {
+      "get": {
+        "operationId": "listMenuItems",
+        "summary": "List all menu items (including unavailable ones)",
+        "tags": [
+          "menu"
+        ],
+        "responses": {
+          "200": {
+            "description": "Menu items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MenuItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

@@ -4,6 +4,8 @@ import type { Bindings } from "./env.ts";
 import { errorBody } from "./contract/errors.ts";
 import { registerHealthRoutes } from "./routes/health.ts";
 import { registerOrderRoutes } from "./routes/orders.ts";
+import { registerCustomerRoutes } from "./routes/customers.ts";
+import { registerMenuRoutes } from "./routes/menu.ts";
 
 /**
  * Builds the OpenAPIHono app. Shared by the Worker runtime entry (index.ts)
@@ -33,6 +35,8 @@ export function createApp() {
 
   registerHealthRoutes(app);
   registerOrderRoutes(app);
+  registerCustomerRoutes(app);
+  registerMenuRoutes(app);
 
   return app;
 }
