@@ -9,7 +9,7 @@
     "start": "expo start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "echo \"(dashboard) no tests in spike\""
+    "test": "vitest run"
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.2",
